@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font: 14px system-ui, sans-serif; width: 340px; padding: 12px; margin: 0; }
+    h1 { font-size: 15px; margin: 0 0 10px; }
+    label.row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .modes { border: 1px solid #ccc; border-radius: 6px; padding: 6px 10px; margin: 10px 0; }
+    .modes label { display: block; margin: 6px 0; cursor: pointer; }
+    textarea { width: 100%; height: 130px; box-sizing: border-box; font: 12.5px monospace; white-space: pre; }
+    small { color: #666; display: block; margin: 4px 0 8px; line-height: 1.35; }
+    button { padding: 6px 12px; }
+    #status { margin-left: 8px; color: #2a7; }
+  </style>
+</head>
+<body>
+  <h1>OFMB</h1>
+  <label class="row"><input type="checkbox" id="enabled"> Filter enabled</label>
+
+  <div class="modes">
+    <label><input type="radio" name="mode" value="replace"> Replace names with their replacement</label>
+    <label><input type="radio" name="mode" value="hide"> Hide posts that mention any name</label>
+  </div>
+
+  <div>Names and replacements:</div>
+  <textarea id="rules" spellcheck="false"></textarea>
+  <small>
+    One per line: <code>Name =&gt; replacement</code><br>
+    A line with only a name is used just for hiding. Longer names win, so list "Donald Trump" above "Trump" or in any order.
+  </small>
+  <button id="save">Save</button><button id="reset" style="margin-left:6px">Reset</button><span id="status"></span>
+  <script src="popup.js"></script>
+</body>
+</html>

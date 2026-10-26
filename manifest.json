@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "OFMB",
+  "version": "1.3.0",
+  "description": "Hides or rewrites chosen names in headlines on any site.",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_title": "OFMB",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
