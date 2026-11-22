@@ -98,17 +98,27 @@
     return true;
   }
 
+  // chrome.storage.sync is missing or does not persist in some browsers (Electron-based ones): read local too and prefer what it holds
+  function readSettings(cb) {
+    const defaults = { enabled: true, mode: "replace", rulesText: DEFAULT_RULES };
+    const read = (name) => new Promise((res) => {
+      try {
+        const area = chrome.storage && chrome.storage[name];
+        if (!area) return res({});
+        area.get(null, (all) => res(chrome.runtime && chrome.runtime.lastError ? {} : (all || {})));
+      } catch (e) { res({}); }
+    });
+    Promise.all([read("sync"), read("local")]).then(([sync, local]) => cb({ ...defaults, ...sync, ...local }));
+  }
+
   function loadSettings(cb) {
-    chrome.storage.sync.get(
-      { enabled: true, mode: "replace", rulesText: DEFAULT_RULES },
-      (cfg) => {
-        enabled = cfg.enabled;
-        mode = cfg.mode === "hide" ? "hide" : "replace";
-        rulesText = cfg.rulesText || DEFAULT_RULES;
-        buildAll();
-        cb && cb();
-      }
-    );
+    readSettings((cfg) => {
+      enabled = cfg.enabled;
+      mode = cfg.mode === "hide" ? "hide" : "replace";
+      rulesText = cfg.rulesText || DEFAULT_RULES;
+      buildAll();
+      cb && cb();
+    });
   }
 
   function hasHit(text) {
@@ -337,12 +347,14 @@
     }
   });
 
-  chrome.storage.onChanged.addListener(() => {
-    loadSettings(() => {
-      resetAll();
-      if (enabled) scan(document.body);
+  try {
+    chrome.storage.onChanged.addListener(() => {
+      loadSettings(() => {
+        resetAll();
+        if (enabled) scan(document.body);
+      });
     });
-  });
+  } catch (e) { /* no change events here: settings are read when the page loads */ }
 
   loadSettings(() => {
     scan(document.body);
